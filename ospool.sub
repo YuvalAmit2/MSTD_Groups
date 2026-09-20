@@ -1,0 +1,48 @@
+# HTCondor submit file for the OSPool (or any HTCondor pool).
+#
+# This job is close to an ideal OSPool workload: single core, ~1 MB of memory,
+# no input data, ~100 bytes of output, and thousands of short independent tasks.
+#
+# Build a STATIC binary for a baseline x86-64 target -- OSPool workers are
+# heterogeneous, so -march=native compiled on the access point will SIGILL on
+# older machines.  x86-64-v2 gives you SSE4.2, hence a hardware popcount:
+#
+#   gcc -O3 -march=x86-64-v2 -funroll-loops -static -o balanced_dihedral balanced_dihedral.c
+#   mkdir -p out err log
+#   condor_submit ospool.sub
+#   # when it drains:
+#   python3 combine_files.py 30 20000 out/
+#
+# Tune SHARDS so each job runs 15-30 min on a ~3 GHz core: measure with
+# ./balanced_dihedral 20 first, then SHARDS ~ (total node estimate) / (nodes per
+# 20 min).  Jobs evicted by preemption are retried automatically, and
+# combine_files.py refuses to report a total while any shard is missing.
+
+K      = 30
+SHARDS = 20000
+SPLIT  = 6
+
+universe                = vanilla
+executable              = balanced_dihedral
+arguments               = $(K) $(SHARDS) $(Process) $(SPLIT)
+
+should_transfer_files   = YES
+when_to_transfer_output = ON_EXIT
+transfer_executable     = TRUE
+
+output                  = out/shard_$(Process).out
+error                   = err/shard_$(Process).err
+log                     = log/all.log
+
+request_cpus            = 1
+request_memory          = 256MB
+request_disk            = 256MB
+
+# OSPool routing hint: "Short" < 1h, "Medium" < 10h, "Long" < 20h (checkpointed)
++JobDurationCategory    = "Medium"
+
+# be resilient to preemption on opportunistic capacity
+max_retries             = 5
+requirements            = (Arch == "X86_64") && (OSGVO_OS_STRING =!= UNDEFINED || TRUE)
+
+queue $(SHARDS)

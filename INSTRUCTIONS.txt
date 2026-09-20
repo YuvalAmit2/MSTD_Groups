@@ -1,0 +1,186 @@
+================================================================================
+BALANCED-SUBSET COMPUTATION -- RUN INSTRUCTIONS
+================================================================================
+
+For each k, count the subsets A of the dihedral group of order 2k with
+|AA| = |AA^-1|.  Phase 1 checks the code against known answers; phase 2 is the
+real work.  Please report back after each phase.
+
+Needs a C compiler (C99 + unsigned __int128) and Python 3.6+.  Each process uses
+1 core and under 1 MB of RAM.  No threads, MPI, GPU, input files or network.
+
+
+--------------------------------------------------------------------------------
+BUILD
+--------------------------------------------------------------------------------
+
+gcc -O3 -march=native -funroll-loops -o balanced_dihedral balanced_dihedral.c
+
+mkdir -p log
+
+-O3 matters.  If the login node differs from the compute nodes, build in an
+interactive job, or use -march=x86-64-v2.
+
+
+--------------------------------------------------------------------------------
+HOW EVERY RUN WORKS
+--------------------------------------------------------------------------------
+
+Every run is two lines: submit a job array, then combine its output.  Replace
+<NUMCORES> with the number of cores the run should occupy; that is the only
+thing you fill in, and it is the same everywhere.
+
+WAIT for the array to finish before the combine line -- sbatch returns at once,
+so watch it with  squeue -u $USER .  combine_files.py refuses to answer until
+every shard is present, so a partial run cannot pass as a final one.
+
+0-999 is the number of array elements, %<NUMCORES> how many run at once.  Each
+element runs NSHARD/1000 shards in sequence, so NSHARD may exceed MaxArraySize.
+
+If anything dies, resubmit the identical sbatch line: finished shards are
+skipped, so every resubmission makes progress.
+
+
+================================================================================
+PHASE 1 -- VALIDATION.  DO THIS FIRST.
+================================================================================
+
+Four known answers.  The code must reproduce them EXACTLY.
+
+k = 18, expect 64309943398
+
+K=18 NSHARD=1000 sbatch --array=0-999%<NUMCORES> slurm_array.sh
+python3 combine_files.py 18 1000
+
+k = 19, expect 260721882046
+
+K=19 NSHARD=1000 sbatch --array=0-999%<NUMCORES> slurm_array.sh
+python3 combine_files.py 19 1000
+
+k = 20, expect 1052085090244
+
+K=20 NSHARD=1000 sbatch --array=0-999%<NUMCORES> slurm_array.sh
+python3 combine_files.py 20 1000
+
+k = 21, expect 4247491679638
+
+K=21 NSHARD=1000 sbatch --array=0-999%<NUMCORES> slurm_array.sh
+python3 combine_files.py 21 1000
+
+And one single process, an independent check of the sharding.  Same answer for
+k=18, about half a minute:
+
+./balanced_dihedral 18
+
+Cost should be roughly 25, 75, 255 and 775 core-seconds on a 2.1 GHz Xeon core,
+within 20%.  Your k=20 figure scales every phase 2 estimate.  Elapsed time means
+little at this size -- it is mostly queue time.
+
+STOP AND REPORT BACK, DO NOT START PHASE 2, IF:
+  - any count differs in any digit;
+  - the build fails or a run crashes;
+  - the cost is far above those figures (k=20 in thousands of core-seconds
+    rather than hundreds usually means the compiler flags were lost).
+Then send: compiler and version, CPU model, the command, and the full output.
+
+
+================================================================================
+PHASE 2 -- PRODUCTION RUNS
+================================================================================
+
+In ascending order, one at a time.  Report each result before starting the next,
+and stop there if any k fails or looks wrong.
+
+     k   core-seconds   elapsed on 256 cores   elapsed on 1000 cores
+    ----------------------------------------------------------------
+    22          2,600                 10 s                    3 s
+    23          8,100                 32 s                    8 s
+    24         26,600                  2 min                 27 s
+    25         82,800                  5 min                  1 min
+    26        277,000                 18 min                  5 min
+    27        828,000                 54 min                 14 min
+    28      2,740,000                  3.0 h                 46 min
+    29      8,360,000                  9.1 h                  2.3 h
+    30     28,000,000                 30 h                    7.8 h
+
+More cores is very welcome; nothing communicates, so elapsed time falls
+linearly.  1000 is the ceiling as written, set by the array size; to go past it
+widen both (--array=0-1999 with NSHARD=40000 for k=30).
+
+k = 22
+K=22 NSHARD=1000 sbatch --array=0-999%<NUMCORES> slurm_array.sh
+python3 combine_files.py 22 1000
+
+k = 23
+K=23 NSHARD=1000 sbatch --array=0-999%<NUMCORES> slurm_array.sh
+python3 combine_files.py 23 1000
+
+k = 24
+K=24 NSHARD=1000 sbatch --array=0-999%<NUMCORES> slurm_array.sh
+python3 combine_files.py 24 1000
+
+k = 25
+K=25 NSHARD=1000 sbatch --array=0-999%<NUMCORES> slurm_array.sh
+python3 combine_files.py 25 1000
+
+k = 26
+K=26 NSHARD=1000 sbatch --array=0-999%<NUMCORES> slurm_array.sh
+python3 combine_files.py 26 1000
+
+k = 27
+K=27 NSHARD=1000 sbatch --array=0-999%<NUMCORES> slurm_array.sh
+python3 combine_files.py 27 1000
+
+k = 28
+K=28 NSHARD=2000 sbatch --array=0-999%<NUMCORES> slurm_array.sh
+python3 combine_files.py 28 2000
+
+k = 29
+K=29 NSHARD=8000 sbatch --array=0-999%<NUMCORES> slurm_array.sh
+python3 combine_files.py 29 8000
+
+k = 30
+K=30 NSHARD=20000 sbatch --array=0-999%<NUMCORES> slurm_array.sh
+python3 combine_files.py 30 20000
+
+NSHARD rises with k so no shard runs much over 20 minutes.  Change it if your
+queue prefers otherwise, but tell me, and use the same value when combining.
+
+WALL-TIME LIMIT.  One array element takes core-seconds/1000: 7.8 h at k=30,
+2.3 h at k=29, under an hour below.  slurm_array.sh asks for 12 h.  If your
+queue caps lower, widen the array range or just resubmit after each timeout.
+
+
+================================================================================
+REPORTING BACK
+================================================================================
+
+For each k: the printed count, elapsed time, <NUMCORES>, NSHARD, and anything
+odd (evictions, retries, node failures).  The FIRST line of output is the
+result:
+
+    balanced subsets of D_k = <number>
+
+One check you can apply yourself: each count should be about 4.02 to 4.04 times
+the previous one.  (combine_files.py already verifies shard completeness.)
+
+
+================================================================================
+ALSO USEFUL
+================================================================================
+
+NO SCHEDULER.  To run on one machine -- laptop, workstation, single interactive
+node -- skip the array.  Substitute any k; omit <NUMCORES> to use every core.
+Fine to about k=24.
+
+python3 run_parallel.py 18 <NUMCORES>
+
+OPTIONAL CROSS-CHECK, recommended, costs one extra k=24 run.  A different shard
+count and split depth cut the search tree up differently, so an identical answer
+is strong evidence the sharding is sound:
+
+K=24 NSHARD=997 SPLIT=5 sbatch --array=0-999%<NUMCORES> slurm_array.sh
+python3 combine_files.py 24 997
+
+LIMITS.  k <= 31 (32-bit masks).  Cost rises about 3.2x per unit k, so k=31 is
+near 90,000,000 core-seconds -- please don't go past 30 without asking.
