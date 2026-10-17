@@ -3,15 +3,16 @@ message: "If you use this software or data, please cite both the article and thi
 title: "MSTD_Groups: code and data for 'Product and quotient set dominance in finite groups'"
 type: software
 version: "1.0.0"
-date-released: "2026-10-17"   # TODO: set to the date of the GitHub release
+date-released: "2026-10-17"
 license: MIT
 repository-code: "https://github.com/YuvalAmit2/MSTD_Groups"
-# TODO: confirm the author list for the software (e.g. add Atrey Desai, who ran
-# and adapted the cluster computations, if he agrees).
 authors:
   - family-names: Amit
     given-names: Yuval
     affiliation: "University of Maryland"
+  - family-names: Desai
+  - given-names: Atrey
+  - affiliation: "University of Maryland"
 keywords:
   - MSTD sets
   - product sets
