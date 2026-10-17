@@ -1,0 +1,42 @@
+cff-version: 1.2.0
+message: "If you use this software or data, please cite both the article and this archive."
+title: "MSTD_Groups: code and data for 'Product and quotient set dominance in finite groups'"
+type: software
+version: "1.0.0"
+date-released: "2026-10-17"   # TODO: set to the date of the GitHub release
+license: MIT
+repository-code: "https://github.com/YuvalAmit2/MSTD_Groups"
+# TODO: confirm the author list for the software (e.g. add Atrey Desai, who ran
+# and adapted the cluster computations, if he agrees).
+authors:
+  - family-names: Amit
+    given-names: Yuval
+    affiliation: "University of Maryland"
+keywords:
+  - MSTD sets
+  - product sets
+  - quotient sets
+  - dihedral groups
+  - independent sets
+preferred-citation:
+  type: article
+  title: "Product and quotient set dominance in finite groups"
+  authors:
+    - family-names: Amit
+      given-names: Yuval
+    - family-names: Chen
+      given-names: Lucas
+    - family-names: Housholder
+      given-names: Christopher
+    - family-names: Im
+      given-names: Joshua
+    - family-names: Khan
+      given-names: Joshua
+    - family-names: Miller
+      given-names: Steven J.
+    - family-names: Palomares
+      given-names: Mateo
+    - family-names: Pradhan
+      given-names: Devayani
+  year: 2026
+  notes: "Submitted to the Journal of Number Theory."

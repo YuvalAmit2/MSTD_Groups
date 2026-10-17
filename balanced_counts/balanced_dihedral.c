@@ -36,14 +36,17 @@ typedef unsigned int u32;
 typedef unsigned long long u64;
 typedef unsigned __int128 u128;
 
-static int K, NSLOT, SPLIT = 12, NTASK = 1, TASKID = 0;
+static int K, NSLOT, SPLIT = 12;
+static u64 NTASK = 1, TASKID = 0;
+static int HIER = 0, PARENT_SPLIT = 0;
+static u64 PARENT_NTASK = 1, PARENT_TASKID = 0;
 static u32 FULL;
 static int kind_[64], sv_[64], sw_[64], remR_[64], remT_[64];
 static u32 bit_[64];
 static u64 pow2remR_[64];
 static __int128 cnt[64];     /* cnt[t] = #balanced pairs, 0 in T, |T| = t   */
 static u128 acc[64][64];     /* acc[remT][t] = pooled 2^remR from pruned subtrees */
-static u64 prefix_ctr;
+static u64 prefix_ctr, parent_prefix_ctr;
 
 static inline u32 rl(u32 m, int s) { return ((m << s) | (m >> (K - s))) & FULL; }
 #define PC __builtin_popcount
@@ -72,7 +75,14 @@ static void rec(int idx, u32 R, u32 Rn, u32 T, u32 Tn,
             t2 = t + 1;
         }
         const u32 PE = P2 | E2, DE = D2 | E2;
-        const int own = (size + 1 > SPLIT) | (TASKID == 0); /* above the split depth: task 0 only */
+        int own;
+        if (!HIER) {
+            own = (size + 1 > SPLIT) | (TASKID == 0);
+        } else if (size + 1 <= PARENT_SPLIT) {
+            own = (PARENT_TASKID == 0) & (TASKID == 0);
+        } else {
+            own = (size + 1 > SPLIT) | (TASKID == 0);
+        }
         if (PE == FULL && DE == FULL && M2 == FULL) {   /* AA = AA^-1 = G, hereditary */
             if (own) acc[remT_[j]][t2] += pow2remR_[j];
             continue;
@@ -84,7 +94,10 @@ static void rec(int idx, u32 R, u32 Rn, u32 T, u32 Tn,
         }
         if (own) cnt[t2] += bal;
         if (j + 1 < NSLOT) {
-            if (size + 1 == SPLIT) { if (prefix_ctr++ % NTASK != (u64)TASKID) continue; }
+            if (HIER && size + 1 == PARENT_SPLIT) {
+                if (parent_prefix_ctr++ % PARENT_NTASK != PARENT_TASKID) continue;
+            }
+            if (size + 1 == SPLIT) { if (prefix_ctr++ % NTASK != TASKID) continue; }
             rec(j + 1, R2, Rn2, T2, Tn2, P2, D2, E2, M2, N2, size + 1, t2);
         }
     }
@@ -107,9 +120,19 @@ static u64 rot_only(int idx, u32 R, u32 Rn, u32 P, u32 D)
 int main(int argc, char **argv)
 {
     K = argc > 1 ? atoi(argv[1]) : 8;
-    NTASK  = argc > 2 ? atoi(argv[2]) : 1;
-    TASKID = argc > 3 ? atoi(argv[3]) : 0;
+    NTASK  = argc > 2 ? strtoull(argv[2], NULL, 10) : 1;
+    TASKID = argc > 3 ? strtoull(argv[3], NULL, 10) : 0;
     SPLIT  = argc > 4 ? atoi(argv[4]) : 12;
+    if (argc > 7) {
+        PARENT_NTASK = strtoull(argv[5], NULL, 10);
+        PARENT_TASKID = strtoull(argv[6], NULL, 10);
+        PARENT_SPLIT = atoi(argv[7]);
+        HIER = 1;
+        if (PARENT_SPLIT >= SPLIT) {
+            fprintf(stderr, "parent split depth must be below child split depth\n");
+            return 2;
+        }
+    }
     if (NTASK == 1) SPLIT = 1 << 30;
     FULL = (1u << K) - 1;
 
@@ -129,9 +152,12 @@ int main(int argc, char **argv)
     struct timespec a, b; clock_gettime(CLOCK_MONOTONIC, &a);
     memset(cnt, 0, sizeof cnt); memset(acc, 0, sizeof acc);
     /* start with T = {0}: E = {0}, everything else empty, |A| = 1 */
-    if (TASKID == 0) cnt[1] += 1;                  /* A = {tau} itself is balanced */
+    if (TASKID == 0 && (!HIER || PARENT_TASKID == 0))
+        cnt[1] += 1;                               /* A = {tau} itself is balanced */
     rec(0, 0, 0, 1u, 1u, 0, 0, 1u, 0, 0, 1, 1);
-    u64 empty_T = (NTASK == 1 || TASKID == 0) ? 1 + rot_only(0, 0, 0, 0, 0) : 0;
+    u64 empty_T = (NTASK == 1 || TASKID == 0) &&
+                  (!HIER || PARENT_TASKID == 0) ?
+                  1 + rot_only(0, 0, 0, 0, 0) : 0;
     clock_gettime(CLOCK_MONOTONIC, &b);
 
     /* expand pooled subtree counts, C(remT, extra reflections) */
@@ -156,7 +182,8 @@ int main(int argc, char **argv)
         printf("balanced subsets of D_%d = %llu\n", K, (u64)ans);
         printf("  k = %d   %.1f core-seconds\n", K, sec);
     } else {
-        printf("k=%2d task %d/%d  partial: ", K, TASKID, NTASK);
+        printf("k=%2d task %llu/%llu  partial: ", K,
+               (unsigned long long)TASKID, (unsigned long long)NTASK);
         for (int t = 1; t <= K; t++) printf("%lld ", (long long)tot[t]);
         printf(" emptyT=%llu seconds=%.3f\n", empty_T, sec);
     }

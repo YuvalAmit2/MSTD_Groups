@@ -1,0 +1,31 @@
+k,N,balanced_subsets,computed_by,cluster_shards,cluster_core_seconds,independent_checks
+1,2,4,single process,,,reference_bruteforce.py; brute_dihedral.c; brute_moments.c
+2,4,16,single process,,,reference_bruteforce.py; brute_dihedral.c; brute_moments.c
+3,6,46,single process,,,reference_bruteforce.py; brute_dihedral.c; brute_moments.c
+4,8,184,single process,,,reference_bruteforce.py; brute_dihedral.c; brute_moments.c
+5,10,684,single process,,,reference_bruteforce.py; brute_dihedral.c; brute_moments.c
+6,12,2830,single process,,,reference_bruteforce.py; brute_dihedral.c; brute_moments.c
+7,14,11008,single process,,,reference_bruteforce.py; brute_dihedral.c; brute_moments.c
+8,16,46584,single process,,,reference_bruteforce.py; brute_dihedral.c; brute_moments.c
+9,18,192250,single process,,,brute_dihedral.c; brute_moments.c
+10,20,806396,single process,,,brute_dihedral.c; brute_moments.c
+11,22,3328472,single process,,,brute_dihedral.c; brute_moments.c
+12,24,13788886,single process,,,brute_dihedral.c; brute_moments.c
+13,26,56881972,single process,,,brute_dihedral.c; brute_moments.c
+14,28,233244664,single process,,,brute_dihedral.c
+15,30,957162366,single process,,,brute_dihedral.c
+16,32,3897446296,single process,,,brute_dihedral.c
+17,34,15877984160,single process,,,
+18,36,64309943398,cluster (UMIACS Nexus),1000,65.6,single-process rerun
+19,38,260721882046,cluster (UMIACS Nexus),1000,182.7,single-process rerun
+20,40,1052085090244,cluster (UMIACS Nexus),1000,536.1,single-process rerun
+21,42,4247491679638,cluster (UMIACS Nexus),1000,1560,single-process rerun
+22,44,17086382476476,cluster (UMIACS Nexus),1000,4945,
+23,46,68788510296734,cluster (UMIACS Nexus),1000,15369,
+24,48,276258844902918,cluster (UMIACS Nexus),1000,49608,
+25,50,1109610722447684,cluster (UMIACS Nexus),1000,133353,
+26,52,4449554721586276,cluster (UMIACS Nexus),1000,476533,
+27,54,17848857181226662,cluster (UMIACS Nexus),1000,1582627,
+28,56,71515396060677424,cluster (UMIACS Nexus),2000,4891016,
+29,58,286563614409785468,cluster (UMIACS Nexus),8000,12357756,
+30,60,1147452736497479150,cluster (UMIACS Nexus),20000 + re-split (see balanced_counts/README.md),47091403,8 re-split shards sum to their originals

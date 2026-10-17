@@ -31,9 +31,14 @@ def combine_dir(k, nshard, path):
     secs = 0.0
     seen = {}
     files = ([path] if os.path.isfile(path)
-             else [os.path.join(dp, f) for dp, _, fs in os.walk(path) for f in fs])
+             else [os.path.join(dp, f) for dp, _, fs in os.walk(path) for f in fs
+                   if ".tmp" not in f])          # skip shards still being written
     for fn in files:
-        with open(fn, errors="replace") as fh:
+        try:
+            fh = open(fn, errors="replace")
+        except FileNotFoundError:                 # renamed/removed while we were scanning
+            continue
+        with fh:
             for line in fh:
                 m = LINE.search(line)
                 if not m:

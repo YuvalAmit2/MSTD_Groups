@@ -1,0 +1,59 @@
+k,N,value_used_for_2^N-B,ratio_M1^2/(M2*(2^N-B)),ratio_exceeds_1/2
+3,6,exact B,0.888889,True
+4,8,exact B,0.615385,True
+5,10,exact B,0.768627,True
+6,12,exact B,0.577755,True
+7,14,exact B,0.637676,True
+8,16,exact B,0.551736,True
+9,18,exact B,0.604091,True
+10,20,exact B,0.516117,True
+11,22,exact B,0.575503,True
+12,24,exact B,0.519979,True
+13,26,exact B,0.566140,True
+14,28,exact B,0.500588,True
+15,30,exact B,0.574514,True
+16,32,exact B,0.529658,True
+17,34,exact B,0.572115,True
+18,36,exact B,0.518307,True
+19,38,exact B,0.584298,True
+20,40,exact B,0.552520,True
+21,42,exact B,0.607337,True
+22,44,exact B,0.546006,True
+23,46,exact B,0.620962,True
+24,48,exact B,0.597075,True
+25,50,exact B,0.645201,True
+26,52,exact B,0.587897,True
+27,54,exact B,0.673185,True
+28,56,exact B,0.640825,True
+29,58,exact B,0.694019,True
+30,60,exact B,0.638484,True
+31,62,upper bound U,0.578009,True
+32,64,upper bound U,0.560289,True
+33,66,upper bound U,0.625842,True
+34,68,upper bound U,0.572126,True
+35,70,upper bound U,0.665460,True
+36,72,upper bound U,0.644760,True
+37,74,upper bound U,0.703987,True
+38,76,upper bound U,0.648585,True
+39,78,upper bound U,0.743407,True
+40,80,upper bound U,0.719706,True
+41,82,upper bound U,0.773992,True
+42,84,upper bound U,0.715937,True
+43,86,upper bound U,0.804063,True
+44,88,upper bound U,0.780597,True
+45,90,upper bound U,0.833479,True
+46,92,upper bound U,0.769611,True
+47,94,upper bound U,0.854473,True
+48,96,upper bound U,0.832610,True
+49,98,upper bound U,0.875218,True
+50,100,upper bound U,0.813581,True
+51,102,upper bound U,0.894537,True
+52,104,upper bound U,0.869715,True
+53,106,upper bound U,0.908614,True
+54,108,upper bound U,0.847978,True
+55,110,upper bound U,0.922269,True
+56,112,upper bound U,0.899890,True
+57,114,upper bound U,0.934353,True
+58,116,upper bound U,0.873667,True
+59,118,upper bound U,0.943143,True
+60,120,upper bound U,0.921883,True
