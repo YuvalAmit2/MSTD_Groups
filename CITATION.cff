@@ -11,8 +11,8 @@ authors:
     given-names: Yuval
     affiliation: "University of Maryland"
   - family-names: Desai
-  - given-names: Atrey
-  - affiliation: "University of Maryland"
+    given-names: Atrey
+    affiliation: "University of Maryland"
 keywords:
   - MSTD sets
   - product sets
