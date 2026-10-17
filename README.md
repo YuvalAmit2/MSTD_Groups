@@ -3,12 +3,12 @@
 Code and data for the paper
 
 > Y. Amit, L. Chen, C. Housholder, J. Im, J. Khan, S. J. Miller, M. Palomares, D. Pradhan,
-> **Product and quotient set dominance in finite groups** (submitted to the *Journal of Number Theory*).
+> **Product and quotient set dominance in finite groups.**
 
 The only computer-assisted part of the paper is **Appendix A**. It shows that every dihedral group
 $D_k$ (order $N = 2k$) with $3 \le k \le 60$ satisfies the inequality of Theorem 1.3,
 
-$$\frac{M_1^2}{M_2\,(2^N - B)} \;>\; \frac12, \qquad M_1 > 0,$$
+$$\frac{M_1^2}{M_2\,(2^N - B)} > \frac12, \qquad M_1 > 0,$$
 
 so that $D_k$ is product-dominant. Theorem 6.2 handles $k \ge 61$ by hand. Here $M_1$ and $M_2$ are the first
 two moments (summed over all subsets) of $d(A) = |AA| - |AA^{-1}|$, and $B$ is the number of balanced subsets
@@ -67,7 +67,7 @@ minute) and rebuilds `data/moments_dihedral.csv` and `data/ratio_table.csv`.
 
 ### Balanced subsets of $D_k$
 
-$B(D_k) = \#\{A \subseteq D_k : |AA| = |AA^{-1}|\}$ (also in `data/balanced_counts.csv`, which records
+$$B(D_k) = \\#\\{A \subseteq D_k : |AA| = |AA^{-1}|\\}$$ (also in `data/balanced_counts.csv`, which records
 how each value was computed and checked):
 
 | k | B(D_k) | k | B(D_k) |
